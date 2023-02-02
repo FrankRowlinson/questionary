@@ -1,0 +1,27 @@
+.questionary-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  animation: pulsing 180s ease-in-out infinite;
+  background:repeating-radial-gradient(circle farthest-corner at center, #8400db 0%, #060415 60%);
+  background-size: 200% 200%;
+  background-attachment: fixed;
+}
+
+@keyframes pulsing {
+  0% {
+    background-position: top left;
+  }
+  25% {
+    background-position: top right;
+  }
+  50% {
+    background-position: bottom right;
+  }
+  75% {
+    background-position: bottom left;
+  }
+  100% {
+    background-position: top left;
+  }
+}

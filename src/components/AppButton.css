@@ -1,0 +1,42 @@
+button[type="submit"] {
+    padding: 10px 20px;
+    background-color: #3900b5;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #090082;
+  }
+  
+  button[type="submit"]:active {
+    transform: translateY(2px);
+  }
+  
+  button[type="reset"] {
+    padding: 10px 20px;
+    background-color: #fff;
+    color: #000067;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 10px;
+  }
+  
+  button[type="reset"]:hover {
+    background-color: #960d0d;
+    color: #fff;
+    border-color: #333;
+  }
+  
+  button[type="reset"]:active {
+    transform: translateY(2px);
+  }
