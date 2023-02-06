@@ -37,9 +37,9 @@ export class Input extends Component {
               rows={7}
             />
             {this.showErrorForTextarea() ? (
-              <p>{this.props.error}</p>
+              <p className='error info-message'>{this.props.error}</p>
             ) : (
-              <p>{this.textareaMessage()}</p>
+              <p className='info-message'>{this.textareaMessage()}</p>
             )}
           </>
         ) : (
@@ -53,7 +53,7 @@ export class Input extends Component {
               }
             />
             {this.props.isSubmitted && (
-              <p className='error-message'>{this.props.error}</p>
+              <p className='error info-message'>{this.props.error}</p>
             )}
           </>
         )}
