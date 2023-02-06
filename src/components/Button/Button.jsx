@@ -1,7 +1,7 @@
 import { Component } from "react"
-import "./AppButton.css"
+import "./Button.css"
 
-export class AppButton extends Component {
+export class Button extends Component {
   render() {
     return <button type={this.props.type}>{this.props.children}</button>
   }

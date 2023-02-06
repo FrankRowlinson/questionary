@@ -1,65 +1,132 @@
 import { Component } from "react"
+import { Form, Button, Input, ButtonGroup, Header } from "../components"
 import {
-  AppForm,
-  AppButton,
-  FormField,
-  ButtonGroup,
-  AppHeader,
-} from "../components"
+  validateName,
+  validatePhone,
+  validateTextarea,
+  validateUrl,
+  required,
+} from "../utils/validation"
 import "./Questionary.css"
 
 export class Questionary extends Component {
+  state = { isSubmitted: false, isValid: true, fields: {}, errors: {} }
+
+  validatorMap = {
+    name: validateName,
+    textarea: validateTextarea,
+    phone: validatePhone,
+    url: validateUrl,
+    date: () => true,
+  }
+
+  setInput(type, name) {
+    function handleInput(event) {
+      this.setState((prev) => {
+        return {
+          fields: {
+            ...prev.fields,
+            [name]: event.target.value,
+          },
+          errors: {
+            ...prev.errors,
+            [name]:
+              required(event.target.value) ||
+              this.validatorMap[type](event.target.value),
+          },
+        }
+      })
+    }
+    return handleInput
+  }
+
+  register(type, name) {
+    if (!this.state.fields.hasOwnProperty(name)) {
+      this.setState((prev) => {
+        return {
+          fields: { ...prev.fields, [name]: "" },
+          errors: { ...prev.errors, [name]: required("") },
+        }
+      })
+    }
+    return {
+      name,
+      type,
+      value: this.state.fields[name],
+      error: this.state.errors[name],
+      handleInput: this.setInput(type, name).bind(this),
+      isSubmitted: this.state.isSubmitted,
+    }
+  }
+
+  validateForm() {
+    console.log(this.state.fields)
+    this.setState(
+      { isSubmitted: true },
+      () =>
+        Object.values(this.state.fields).every((el) => el) && this.showResult()
+    )
+  }
+
+  handleSubmit(event) {
+    event.preventDefault()
+    this.validateForm()
+  }
+
+  showResult() {
+    console.log("Форма валидна")
+  }
+
   render() {
     return (
       <div className='questionary-container'>
-        <AppForm>
-          <AppHeader>Создание анкеты</AppHeader>
-          <FormField label='Имя' name='name' placeholder='Введите имя...' />
-          <FormField
+        <Form handleSubmit={this.handleSubmit.bind(this)}>
+          <Header>Создание анкеты</Header>
+          <Input
+            label='Имя'
+            placeholder='Введите имя...'
+            {...this.register("name", "name")}
+          />
+          <Input
             label='Фамилия'
-            name='surname'
             placeholder='Введите фамилию...'
+            {...this.register("name", "surname")}
           />
-          <FormField
+          <Input
             label='Дата рождения'
-            name='bday'
             placeholder=''
-            type='date'
+            {...this.register("date", "bday")}
           />
-          <FormField
+          <Input
             label='Телефон'
-            name='phone'
             placeholder='+X XXX XXX XXX'
+            {...this.register("phone", "phone")}
           />
-          <FormField
+          <Input
             label='Сайт'
-            name='website'
             placeholder='www.example.com'
-            type='url'
+            {...this.register("url", "website")}
           />
-          <FormField
+          <Input
             label='О себе'
-            name='about'
             placeholder='Вкратце о себе...'
-            textarea
+            {...this.register("textarea", "about")}
           />
-          <FormField
+          <Input
             label='Стек технологий'
-            name='technologies'
             placeholder='Стек технологий...'
-            textarea
+            {...this.register("textarea", "technologies")}
           />
-          <FormField
+          <Input
             label='Описание последнего проекта'
-            name='last-project'
             placeholder='Примененные технологии, роль, достигнутые результаты...'
-            textarea
+            {...this.register("textarea", "last-project")}
           />
           <ButtonGroup>
-            <AppButton type='submit'>Сохранить</AppButton>
-            <AppButton type='reset'>Отменить</AppButton>
+            <Button type='submit'>Сохранить</Button>
+            <Button type='reset'>Отменить</Button>
           </ButtonGroup>
-        </AppForm>
+        </Form>
       </div>
     )
   }
