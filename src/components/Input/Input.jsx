@@ -12,7 +12,7 @@ export class Input extends Component {
   }
   textareaMessage() {
     return `Осталось ${
-      this.props.value ? this.props.value.trim().length : 0
+      this.props.value ? 600 - this.props.value.trim().length : 600
     }/600 символов`
   }
 
