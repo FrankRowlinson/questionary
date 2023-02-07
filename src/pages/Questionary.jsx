@@ -114,12 +114,12 @@ export class Questionary extends Component {
             />
             <Input
               label='Телефон'
-              placeholder='+X XXX XXX XXX'
+              placeholder='X-XXXX-XX-XX'
               {...this.register("phone", "phone")}
             />
             <Input
               label='Сайт'
-              placeholder='www.example.com'
+              placeholder='https://www.example.com'
               {...this.register("url", "website")}
             />
             <Input
