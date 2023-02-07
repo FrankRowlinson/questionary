@@ -69,10 +69,16 @@ export class Questionary extends Component {
 
   validateForm() {
     console.log(this.state.fields)
-    this.setState({
-      isSubmitted: true,
-      isValid: Object.values(this.state.errors).every((el) => !el),
-    })
+    this.setState(
+      {
+        isSubmitted: true,
+        isValid: Object.values(this.state.errors).every((el) => !el),
+      },
+      () => {
+        if (this.state.isValid)
+          document.title = `${this.state.fields.name} ${this.state.fields.surname}`
+      }
+    )
   }
 
   handleSubmit(event) {
