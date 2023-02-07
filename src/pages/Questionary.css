@@ -1,11 +1,13 @@
 .questionary-container {
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 20px;
   animation: pulsing 180s ease-in-out infinite;
   background:repeating-radial-gradient(circle farthest-corner at center, #8400db 0%, #060415 60%);
   background-size: 200% 200%;
   background-attachment: fixed;
+  min-height: 100vh;
 }
 
 @keyframes pulsing {

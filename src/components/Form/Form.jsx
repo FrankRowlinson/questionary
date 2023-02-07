@@ -1,14 +1,14 @@
 import { Component } from "react"
-import "./Form.css"
+import { Container } from "../"
 
 export class Form extends Component {
   render() {
     return (
-      <div className='form-container'>
+      <Container>
         <form onSubmit={(event) => this.props.handleSubmit(event)}>
           {this.props.children}
         </form>
-      </div>
+      </Container>
     )
   }
 }

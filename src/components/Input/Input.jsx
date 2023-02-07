@@ -12,14 +12,14 @@ export class Input extends Component {
   }
   textareaMessage() {
     return `Осталось ${
-      this.props.value ? this.props.value.length : 0
+      this.props.value ? this.props.value.trim().length : 0
     }/600 символов`
   }
 
   showErrorForTextarea() {
     return (
       (this.props.isSubmitted && this.props.error) ||
-      (this.props.value && this.props.error)
+      (this.props.value && this.props.value.trim() && this.props.error)
     )
   }
 

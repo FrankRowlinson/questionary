@@ -1,5 +1,13 @@
 import { Component } from "react"
-import { Form, Button, Input, ButtonGroup, Header } from "../components"
+import {
+  Form,
+  Button,
+  Input,
+  ButtonGroup,
+  Header,
+  QuestionaryResult,
+} from "../components"
+import { resetFields, trimFields } from "../utils/formatting"
 import {
   validateName,
   validatePhone,
@@ -10,14 +18,14 @@ import {
 import "./Questionary.css"
 
 export class Questionary extends Component {
-  state = { isSubmitted: false, isValid: true, fields: {}, errors: {} }
+  state = { isSubmitted: false, isValid: false, fields: {}, errors: {} }
 
   validatorMap = {
     name: validateName,
     textarea: validateTextarea,
     phone: validatePhone,
     url: validateUrl,
-    date: () => true,
+    date: () => null,
   }
 
   setInput(type, name) {
@@ -61,11 +69,10 @@ export class Questionary extends Component {
 
   validateForm() {
     console.log(this.state.fields)
-    this.setState(
-      { isSubmitted: true },
-      () =>
-        Object.values(this.state.fields).every((el) => el) && this.showResult()
-    )
+    this.setState({
+      isSubmitted: true,
+      isValid: Object.values(this.state.errors).every((el) => !el),
+    })
   }
 
   handleSubmit(event) {
@@ -73,60 +80,71 @@ export class Questionary extends Component {
     this.validateForm()
   }
 
-  showResult() {
-    console.log("Форма валидна")
+  handleReset(event) {
+    this.setState({
+      isSubmitted: false,
+      isValid: false,
+      errors: {},
+      fields: { ...resetFields(this.state.fields) },
+    })
   }
 
   render() {
     return (
       <div className='questionary-container'>
-        <Form handleSubmit={this.handleSubmit.bind(this)}>
-          <Header>Создание анкеты</Header>
-          <Input
-            label='Имя'
-            placeholder='Введите имя...'
-            {...this.register("name", "name")}
-          />
-          <Input
-            label='Фамилия'
-            placeholder='Введите фамилию...'
-            {...this.register("name", "surname")}
-          />
-          <Input
-            label='Дата рождения'
-            placeholder=''
-            {...this.register("date", "bday")}
-          />
-          <Input
-            label='Телефон'
-            placeholder='+X XXX XXX XXX'
-            {...this.register("phone", "phone")}
-          />
-          <Input
-            label='Сайт'
-            placeholder='www.example.com'
-            {...this.register("url", "website")}
-          />
-          <Input
-            label='О себе'
-            placeholder='Вкратце о себе...'
-            {...this.register("textarea", "about")}
-          />
-          <Input
-            label='Стек технологий'
-            placeholder='Стек технологий...'
-            {...this.register("textarea", "technologies")}
-          />
-          <Input
-            label='Описание последнего проекта'
-            placeholder='Примененные технологии, роль, достигнутые результаты...'
-            {...this.register("textarea", "last-project")}
-          />
-          <ButtonGroup>
-            <Button type='submit'>Сохранить</Button>
-            <Button type='reset'>Отменить</Button>
-          </ButtonGroup>
-        </Form>
+        {this.state.isValid ? (
+          <QuestionaryResult {...trimFields(this.state.fields)} />
+        ) : (
+          <Form handleSubmit={this.handleSubmit.bind(this)}>
+            <Header main>Создание анкеты</Header>
+            <Input
+              label='Имя'
+              placeholder='Введите имя...'
+              {...this.register("name", "name")}
+            />
+            <Input
+              label='Фамилия'
+              placeholder='Введите фамилию...'
+              {...this.register("name", "surname")}
+            />
+            <Input
+              label='Дата рождения'
+              placeholder=''
+              {...this.register("date", "bday")}
+            />
+            <Input
+              label='Телефон'
+              placeholder='+X XXX XXX XXX'
+              {...this.register("phone", "phone")}
+            />
+            <Input
+              label='Сайт'
+              placeholder='www.example.com'
+              {...this.register("url", "website")}
+            />
+            <Input
+              label='О себе'
+              placeholder='Вкратце о себе...'
+              {...this.register("textarea", "about")}
+            />
+            <Input
+              label='Стек технологий'
+              placeholder='Стек технологий...'
+              {...this.register("textarea", "technologies")}
+            />
+            <Input
+              label='Описание последнего проекта'
+              placeholder='Примененные технологии, роль, достигнутые результаты...'
+              {...this.register("textarea", "lastproject")}
+            />
+            <ButtonGroup>
+              <Button type='submit'>Сохранить</Button>
+              <Button type='reset' onClick={this.handleReset.bind(this)}>
+                Отменить
+              </Button>
+            </ButtonGroup>
+          </Form>
+        )}
       </div>
     )
   }
