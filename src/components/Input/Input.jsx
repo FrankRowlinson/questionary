@@ -1,63 +1,63 @@
-import { Component } from "react"
 import "./Input.css"
 
-export class Input extends Component {
-  attributes = {
-    id: this.props.name,
-    name: this.props.name,
-    value: this.props.value,
-    placeholder: this.props.placeholder || "",
-    type: this.props.type || "text",
-    onChange: this.props.handleInput,
-  }
-  textareaMessage() {
-    return `Осталось ${
-      this.props.value ? 600 - this.props.value.trim().length : 600
-    }/600 символов`
+export const Input = (props) => {
+  const {
+    name,
+    label,
+    placeholder,
+    value,
+    errors,
+    type,
+    handleInput,
+    isSubmitted,
+  } = props
+
+  const attributes = {
+    id: name,
+    name,
+    value,
+    placeholder: placeholder || "",
+    type: type || "text",
+    onChange: handleInput,
   }
 
-  showErrorForTextarea() {
-    return (
-      (this.props.isSubmitted && this.props.error) ||
-      (this.props.value && this.props.value.trim() && this.props.error)
-    )
+  const textareaMessage = () => {
+    return `Осталось ${value ? 600 - value.trim().length : 600}/600 символов`
   }
 
-  render() {
-    return (
-      <div className='form-group'>
-        <label htmlFor={this.props.name}>{this.props.label}</label>
-        {this.attributes.type === "textarea" ? (
-          <>
-            <textarea
-              {...this.attributes}
-              className={
-                this.showErrorForTextarea() ? "form-field error" : "form-field"
-              }
-              rows={7}
-            />
-            {this.showErrorForTextarea() ? (
-              <p className='error info-message'>{this.props.error}</p>
-            ) : (
-              <p className='info-message'>{this.textareaMessage()}</p>
-            )}
-          </>
-        ) : (
-          <>
-            <input
-              {...this.attributes}
-              className={
-                this.props.error && this.props.isSubmitted
-                  ? "form-field error"
-                  : "form-field"
-              }
-            />
-            {this.props.isSubmitted && (
-              <p className='error info-message'>{this.props.error}</p>
-            )}
-          </>
-        )}
-      </div>
-    )
-  }
+  const showError = (errors.empty && isSubmitted) || errors.other
+
+  return (
+    <div className='form-group'>
+      <label htmlFor={name}>{label}</label>
+      {type === "textarea" ? (
+        <>
+          <textarea
+            {...attributes}
+            className={showError ? "form-field error" : "form-field"}
+            rows={7}
+          />
+          {showError ? (
+            <p className='error info-message'>
+              {(isSubmitted && errors.empty) || errors.other}
+            </p>
+          ) : (
+            <p className='info-message'>{textareaMessage()}</p>
+          )}
+        </>
+      ) : (
+        <>
+          <input
+            {...attributes}
+            className={showError ? "form-field error" : "form-field"}
+          />
+          {showError && (
+            <p className='error info-message'>
+              {(isSubmitted && errors.empty) || errors.other}
+            </p>
+          )}
+        </>
+      )}
+    </div>
+  )
 }

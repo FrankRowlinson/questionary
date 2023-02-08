@@ -1,4 +1,4 @@
-import { Component } from "react"
+import { useState, useEffect } from "react"
 import {
   Form,
   Button,
@@ -7,20 +7,23 @@ import {
   Header,
   QuestionaryResult,
 } from "../components"
-import { resetFields, trimFields } from "../utils/formatting"
+import { resetFields } from "../utils/formatting"
 import {
+  required,
   validateName,
   validatePhone,
   validateTextarea,
   validateUrl,
-  required,
 } from "../utils/validation"
 import "./Questionary.css"
 
-export class Questionary extends Component {
-  state = { isSubmitted: false, isValid: false, fields: {}, errors: {} }
+export const Questionary = () => {
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isValid, setIsValid] = useState(false)
+  const [fields, setFields] = useState({})
+  const [errors, setErrors] = useState({})
 
-  validatorMap = {
+  const validatorMap = {
     name: validateName,
     textarea: validateTextarea,
     phone: validatePhone,
@@ -28,130 +31,113 @@ export class Questionary extends Component {
     date: () => null,
   }
 
-  setInput(type, name) {
+  function setInput(type, name) {
     function handleInput(event) {
-      this.setState((prev) => {
-        return {
-          fields: {
-            ...prev.fields,
-            [name]: event.target.value,
-          },
-          errors: {
-            ...prev.errors,
-            [name]:
-              required(event.target.value) ||
-              this.validatorMap[type](event.target.value),
-          },
-        }
-      })
+      setFields((prev) => ({ ...prev, [name]: event.target.value }))
+      setErrors((prev) => ({
+        ...prev,
+        [name]: {
+          empty: required(event.target.value),
+          other: validatorMap[type](event.target.value),
+        },
+      }))
     }
     return handleInput
   }
 
-  register(type, name) {
-    if (!this.state.fields.hasOwnProperty(name)) {
-      this.setState((prev) => {
-        return {
-          fields: { ...prev.fields, [name]: "" },
-          errors: { ...prev.errors, [name]: required("") },
-        }
-      })
+  const register = (type, name) => {
+    if (!fields.hasOwnProperty(name)) {
+      setFields((prev) => ({ ...prev, [name]: "" }))
+      setErrors((prev) => ({
+        ...prev,
+        [name]: { empty: required(""), other: null },
+      }))
     }
     return {
       name,
       type,
-      value: this.state.fields[name],
-      error: this.state.errors[name],
-      handleInput: this.setInput(type, name).bind(this),
-      isSubmitted: this.state.isSubmitted,
+      value: fields[name],
+      errors: errors[name],
+      handleInput: setInput(type, name),
+      isSubmitted,
     }
   }
 
-  validateForm() {
-    console.log(this.state.fields)
-    this.setState(
-      {
-        isSubmitted: true,
-        isValid: Object.values(this.state.errors).every((el) => !el),
-      },
-      () => {
-        if (this.state.isValid)
-          document.title = `${this.state.fields.name} ${this.state.fields.surname}`
-      }
-    )
-  }
+  useEffect(() => {
+    if (isValid) document.title = `${fields.name} ${fields.surname}`
+  }, [isValid, fields])
 
-  handleSubmit(event) {
+  const handleSubmit = (event) => {
     event.preventDefault()
-    this.validateForm()
+    validateForm()
   }
 
-  handleReset(event) {
-    this.setState({
-      isSubmitted: false,
-      isValid: false,
-      errors: {},
-      fields: { ...resetFields(this.state.fields) },
-    })
+  const validateForm = () => {
+    setIsValid(Object.values(errors).every((el) => !el.other && !el.empty))
+    setIsSubmitted(true)
   }
 
-  render() {
-    return (
-      <div className='questionary-container'>
-        {this.state.isValid ? (
-          <QuestionaryResult {...trimFields(this.state.fields)} />
-        ) : (
-          <Form handleSubmit={this.handleSubmit.bind(this)}>
-            <Header main>Создание анкеты</Header>
-            <Input
-              label='Имя'
-              placeholder='Введите имя...'
-              {...this.register("name", "name")}
-            />
-            <Input
-              label='Фамилия'
-              placeholder='Введите фамилию...'
-              {...this.register("name", "surname")}
-            />
-            <Input
-              label='Дата рождения'
-              placeholder=''
-              {...this.register("date", "bday")}
-            />
-            <Input
-              label='Телефон'
-              placeholder='X-XXXX-XX-XX'
-              {...this.register("phone", "phone")}
-            />
-            <Input
-              label='Сайт'
-              placeholder='https://www.example.com'
-              {...this.register("url", "website")}
-            />
-            <Input
-              label='О себе'
-              placeholder='Вкратце о себе...'
-              {...this.register("textarea", "about")}
-            />
-            <Input
-              label='Стек технологий'
-              placeholder='Стек технологий...'
-              {...this.register("textarea", "technologies")}
-            />
-            <Input
-              label='Описание последнего проекта'
-              placeholder='Примененные технологии, роль, достигнутые результаты...'
-              {...this.register("textarea", "lastproject")}
-            />
-            <ButtonGroup>
-              <Button type='submit'>Сохранить</Button>
-              <Button type='reset' onClick={this.handleReset.bind(this)}>
-                Отменить
-              </Button>
-            </ButtonGroup>
-          </Form>
-        )}
-      </div>
-    )
+  const handleReset = () => {
+    setIsSubmitted(false)
+    setIsValid(false)
+    setErrors({})
+    setFields({ ...resetFields(fields) })
   }
+  return (
+    <div className='questionary-container'>
+      {isValid ? (
+        <QuestionaryResult {...fields} />
+      ) : (
+        <Form handleSubmit={handleSubmit.bind(this)}>
+          <Header main>Создание анкеты</Header>
+          <Input
+            label='Имя'
+            placeholder='Введите имя...'
+            {...register("name", "name")}
+          />
+          <Input
+            label='Фамилия'
+            placeholder='Введите фамилию...'
+            {...register("name", "surname")}
+          />
+          <Input
+            label='Дата рождения'
+            placeholder=''
+            {...register("date", "bday")}
+          />
+          <Input
+            label='Телефон'
+            placeholder='X-XXXX-XX-XX'
+            {...register("phone", "phone")}
+          />
+          <Input
+            label='Сайт'
+            placeholder='https://www.example.com'
+            {...register("url", "website")}
+          />
+          <Input
+            label='О себе'
+            placeholder='Вкратце о себе...'
+            {...register("textarea", "about")}
+          />
+          <Input
+            label='Стек технологий'
+            placeholder='Стек технологий...'
+            {...register("textarea", "technologies")}
+          />
+          <Input
+            label='Описание последнего проекта'
+            placeholder='Примененные технологии, роль, достигнутые результаты...'
+            {...register("textarea", "lastproject")}
+          />
+          <ButtonGroup>
+            <Button type='submit'>Сохранить</Button>
+            <Button type='reset' onClick={handleReset.bind(this)}>
+              Отменить
+            </Button>
+          </ButtonGroup>
+        </Form>
+      )}
+    </div>
+  )
 }
