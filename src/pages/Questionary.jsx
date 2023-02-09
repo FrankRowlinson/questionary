@@ -6,6 +6,8 @@ import {
   ButtonGroup,
   Header,
   QuestionaryResult,
+  Modal,
+  Typography,
 } from "../components"
 import { resetFields } from "../utils/formatting"
 import {
@@ -86,7 +88,16 @@ export const Questionary = () => {
   return (
     <div className='questionary-container'>
       {isValid ? (
-        <QuestionaryResult {...fields} />
+        <>
+          <Modal size='sm' isOpenByDefault>
+            <Header>Спасибо!</Header>
+            <Typography>
+              Анкета заполнена корректно. Нажмите "Закрыть" чтобы увидеть
+              результат.
+            </Typography>
+          </Modal>
+          <QuestionaryResult {...fields} />
+        </>
       ) : (
         <Form handleSubmit={handleSubmit.bind(this)}>
           <Header main>Создание анкеты</Header>
