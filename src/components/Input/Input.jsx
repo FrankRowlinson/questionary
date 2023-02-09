@@ -1,3 +1,4 @@
+import { maskPhone } from "../../utils/formatting/"
 import "./Input.css"
 
 export const Input = (props) => {
@@ -15,7 +16,7 @@ export const Input = (props) => {
   const attributes = {
     id: name,
     name,
-    value,
+    value: type === "phone" ? maskPhone(value) : value,
     placeholder: placeholder || "",
     type: type || "text",
     onChange: handleInput,
